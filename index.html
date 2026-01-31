@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetFlow Navigator - Trip Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-secondary-900 text-secondary-100 font-sans antialiased transition-colors duration-300">
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-secondary-900">
+        <div class="w-full max-w-md p-8 bg-secondary-800 rounded-2xl shadow-2xl border border-secondary-700">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <i data-feather="truck" class="w-8 h-8 text-white"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">FleetFlow Navigator</h1>
+                <p class="text-secondary-400">Trip Management System</p>
+            </div>
+            
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-secondary-300 mb-2">Employee ID</label>
+                    <input type="text" id="employee-id" class="w-full px-4 py-3 bg-secondary-900 border border-secondary-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-white placeholder-secondary-500" placeholder="Enter Employee ID" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-secondary-300 mb-2">Password</label>
+                    <input type="password" id="password" class="w-full px-4 py-3 bg-secondary-900 border border-secondary-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-white placeholder-secondary-500" placeholder="Enter Password" required>
+                </div>
+                
+                <div id="login-error" class="hidden text-red-400 text-sm text-center"></div>
+                
+                <button type="submit" class="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+                    <i data-feather="log-in" class="w-5 h-5"></i>
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="mt-6 p-4 bg-secondary-900/50 rounded-lg border border-secondary-700">
+                <p class="text-xs text-secondary-400 text-center mb-2">Demo Credentials:</p>
+                <div class="grid grid-cols-2 gap-2 text-xs text-secondary-300">
+                    <div class="text-center p-2 bg-secondary-800 rounded">Driver: driver1 / driver123</div>
+                    <div class="text-center p-2 bg-secondary-800 rounded">Manager: manager1 / manager123</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Interface -->
+    <div id="app-interface" class="hidden min-h-screen flex">
+        <app-sidebar></app-sidebar>
+        
+        <div class="flex-1 flex flex-col ml-64">
+            <app-header></app-header>
+            
+            <main class="flex-1 p-6 overflow-auto bg-secondary-900">
+                <!-- Dashboard View -->
+                <div id="view-dashboard" class="view-section space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-secondary-800 p-6 rounded-xl border border-secondary-700 shadow-lg">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-primary-500/20 rounded-lg">
+                                    <i data-feather="calendar" class="w-6 h-6 text-primary-400"></i>
+                                </div>
+                                <span class="text-xs font-medium text-secondary-400">Today</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white" id="stat-today-trips">0</h3>
+                            <p class="text-sm text-secondary-400 mt-1">Trips Completed</p>
+                        </div>
+                        
+                        <div class="bg-secondary-800 p-6 rounded-xl border border-secondary-700 shadow-lg">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-emerald-500/20 rounded-lg">
+                                    <i data-feather="map" class="w-6 h-6 text-emerald-400"></i>
+                                </div>
+                                <span class="text-xs font-medium text-secondary-400">Today</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white" id="stat-total-miles">0</h3>
+                            <p class="text-sm text-secondary-400 mt-1">Total Miles</p>
+                        </div>
+                        
+                        <div class="bg-secondary-800 p-6 rounded-xl border border-secondary-700 shadow-lg">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-amber-500/20 rounded-lg">
+                                    <i data-feather="clock" class="w-6 h-6 text-amber-400"></i>
+                                </div>
+                                <span class="text-xs font-medium text-secondary-400">Today</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white" id="stat-total-wait">0</h3>
+                            <p class="text-sm text-secondary-400 mt-1">Total Wait (min)</p>
+                        </div>
+                        
+                        <div class="bg-secondary-800 p-6 rounded-xl border border-secondary-700 shadow-lg">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-purple-500/20 rounded-lg">
+                                    <i data-feather="users" class="w-6 h-6 text-purple-400"></i>
+                                </div>
+                                <span class="text-xs font-medium text-secondary-400">Active</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white" id="stat-active-drivers">0</h3>
+                            <p class="text-sm text-secondary-400 mt-1">Active Drivers</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-secondary-800 rounded-xl border border-secondary-700 shadow-lg p-6">
+                        <h3 class="text-lg font-semibold text-white mb-4">Recent Activity</h3>
+                        <div id="recent-activity-list" class="space-y-3">
+                            <p class="text-secondary-400 text-sm italic">No recent activity</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trip Sheet View -->
+                <div id="view-trip-sheet" class="view-section hidden">
+                    <trip-form></trip-form>
+                </div>
+
+                <!-- Database View -->
+                <div id="view-database" class="view-section hidden">
+                    <database-view></database-view>
+                </div>
+
+                <!-- Spreadsheet View -->
+                <div id="view-spreadsheet" class="view-section hidden">
+                    <spreadsheet-workspace></spreadsheet-workspace>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Component Scripts -->
+    <script src="components/sidebar.js"></script>
+    <script src="components/header.js"></script>
+    <script src="components/trip-form.js"></script>
+    <script src="components/database-view.js"></script>
+    <script src="components/spreadsheet-workspace.js"></script>
+    
+    <!-- Main Scripts -->
+    <script src="sheets.js"></script>
+    <script src="script.js"></script>
+    
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>'
